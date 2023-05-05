@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>norlab_trajectory_python_test</name>
+  <version>0.0.1</version>
+  <description>A package to test the python bindings of norlab_trajectory.</description>
+  <maintainer email="simon-pierre.deschenes.1@ulaval.ca">Simon-Pierre Deschênes</maintainer>
+  <license>BSD-2.0</license>
+
+  <depend>norlab_trajectory</depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>
