@@ -10,7 +10,10 @@ def main():
     pose_list = []
     traj_estim = []
 
-    # Open the CSV file
+    # Create an empty set to keep track of timestamps
+    timestamps_set = set()
+
+# Open the CSV file
     with open('/home/effie/norlab_trajectory_test/odom_data.csv', newline='') as csvfile:
         # Create a CSV reader object
         reader = csv.reader(csvfile, delimiter=',')
@@ -25,6 +28,13 @@ def main():
 
             # Convert strings to floats
             x, y, z, qx, qy, qz, qw = map(float, [x, y, z, qx, qy, qz, qw])
+
+            # Check if the timestamp is already in the set
+            if timestamp in timestamps_set:
+                continue  # skip this row
+
+            # Add the timestamp to the set
+            timestamps_set.add(timestamp)
 
             # Compute rotation matrix from quaternion
             T = np.array([
