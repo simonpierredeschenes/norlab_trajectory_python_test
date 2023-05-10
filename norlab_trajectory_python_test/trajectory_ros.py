@@ -6,61 +6,45 @@ import csv
 
 
 def main():
-    # Create an empty list to store the timestamp and transformation matrix tuples
     pose_list = []
     traj_estim = []
-
-    # Create an empty set to keep track of timestamps
     timestamps_set = set()
 
-# Open the CSV file
-    with open('/home/effie/norlab_trajectory_test/odom_data.csv', newline='') as csvfile:
-        # Create a CSV reader object
+    with open('/home/effie/ros2_ws/src/norlab_trajectory_python_test/norlab_trajectory_python_test/odom_data copy.csv', newline='') as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
 
-        # Skip the header row
         next(reader)
 
-        # Loop through the remaining rows
         for row in reader:
-            # Extract the values
             timestamp, x, y, z, qx, qy, qz, qw = row
+            timestamp, x, y, z, qx, qy, qz, qw = map(float, [timestamp, x, y, z, qx, qy, qz, qw])
 
-            # Convert strings to floats
-            x, y, z, qx, qy, qz, qw = map(float, [x, y, z, qx, qy, qz, qw])
-
-            # Check if the timestamp is already in the set
             if timestamp in timestamps_set:
-                continue  # skip this row
-
-            # Add the timestamp to the set
+                continue
             timestamps_set.add(timestamp)
 
-            # Compute rotation matrix from quaternion
             T = np.array([
                 [1 - 2 * qy ** 2 - 2 * qz ** 2, 2 * qx * qy - 2 * qz * qw, 2 * qx * qz + 2 * qy * qw, x],
                 [2 * qx * qy + 2 * qz * qw, 1 - 2 * qx ** 2 - 2 * qz ** 2, 2 * qy * qz - 2 * qx * qw, y],
                 [2 * qx * qz - 2 * qy * qw, 2 * qy * qz + 2 * qx * qw, 1 - 2 * qx ** 2 - 2 * qy ** 2, z],
                 [0, 0, 0, 1]])
 
-            # Append the timestamp and matrix as a tuple to the list
             pose_list.append((timestamp, copy.deepcopy(T)))
 
-    # Create the trajectory from the poses
     traj = norlab_trajectory.Trajectory(pose_list)
 
-    # Create a trajectory interpolation
+    print(pose_list[0])
+    print(traj.getPose(pose_list[0][0]))
+
     time_stamps = np.linspace(pose_list[0][0], pose_list[-1][0], 100)
     for time in time_stamps:
         traj_estim.append(traj.getPose(time))
 
-    # Variables x and y of the trajectory
     values_x = [pose[1][0][3] for pose in pose_list]
     values_y = [pose[1][1][3] for pose in pose_list]
     values_x_estim = [pose[0][3] for pose in traj_estim]
     values_y_estim = [pose[1][3] for pose in traj_estim]
 
-    # Create the graphics
     plt.plot(values_x, values_y, '.', label='measured values')
     plt.plot(values_x_estim, values_y_estim, '-', label='interpolated values')
     plt.legend()
