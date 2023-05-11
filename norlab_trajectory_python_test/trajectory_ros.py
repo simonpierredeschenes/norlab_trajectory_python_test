@@ -3,14 +3,14 @@ import numpy as np
 import copy
 import matplotlib.pyplot as plt
 import csv
+import os
 
 
 def main():
     pose_list = []
     traj_estim = []
-    timestamps_set = set()
 
-    with open('/home/effie/ros2_ws/src/norlab_trajectory_python_test/norlab_trajectory_python_test/odom_data copy.csv', newline='') as csvfile:
+    with open(os.path.expanduser('~') + '/ros2_ws/src/norlab_trajectory_python_test/norlab_trajectory_python_test/odom_data.csv', newline='') as csvfile:
         reader = csv.reader(csvfile, delimiter=',')
 
         next(reader)
@@ -18,10 +18,6 @@ def main():
         for row in reader:
             timestamp, x, y, z, qx, qy, qz, qw = row
             timestamp, x, y, z, qx, qy, qz, qw = map(float, [timestamp, x, y, z, qx, qy, qz, qw])
-
-            if timestamp in timestamps_set:
-                continue
-            timestamps_set.add(timestamp)
 
             T = np.array([
                 [1 - 2 * qy ** 2 - 2 * qz ** 2, 2 * qx * qy - 2 * qz * qw, 2 * qx * qz + 2 * qy * qw, x],
@@ -32,9 +28,6 @@ def main():
             pose_list.append((timestamp, copy.deepcopy(T)))
 
     traj = norlab_trajectory.Trajectory(pose_list)
-
-    print(pose_list[0])
-    print(traj.getPose(pose_list[0][0]))
 
     time_stamps = np.linspace(pose_list[0][0], pose_list[-1][0], 100)
     for time in time_stamps:
