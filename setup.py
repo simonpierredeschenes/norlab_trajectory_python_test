@@ -20,7 +20,7 @@ setup(
     entry_points={
         'console_scripts': [
             'test = norlab_trajectory_python_test.test:main',
-            'trajectory_ros = norlab_trajectory_python_test.trajectory_ros:main',
-        ],
+            'interpolation = norlab_trajectory_python_test.interpolation:main',
+            ],
     },
 )
